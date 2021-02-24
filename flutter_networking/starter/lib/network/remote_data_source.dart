@@ -32,6 +32,8 @@
  * THE SOFTWARE.
  */
 
+import 'package:book_app/model/library.dart';
+import 'package:book_app/util/request_type.dart';
 import 'package:http/http.dart';
 
 import '../model/result.dart';
@@ -56,9 +58,15 @@ class RemoteDataSource {
 
   Future<Result> getBooks() async {
     try {
-      final response = await 
+      final response =
+          await client.request(requestType: RequestType.GET, path: "books");
+      if (response.statusCode == 200) {
+        return Result<Library>.success(Library.fromRawJson(response.body));
+      } else {
+        return Result.error("Book list not available");
+      }
     } catch (error) {
-
+      return Result.error("Something went wrong!");
     }
   }
 
