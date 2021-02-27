@@ -48,7 +48,7 @@ class BookClient {
 
   BookClient(this._client);
 
-  Future<Response> request({@required RequestType requestType, @required String path, dynamic parameter = Nothing}) async {
+  Future<Response> request({RequestType requestType, String path, dynamic parameter = Nothing}) async {
     switch (requestType) {
       case RequestType.GET:
         return _client.get("$_baseUrl/$path");

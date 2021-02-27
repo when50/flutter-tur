@@ -66,13 +66,13 @@ class _FavoriteBooksScreenState extends State<FavoriteBooksScreen> {
             future: _apiResponse.getBooks(),
             builder: (context, snapshot) {
               if (snapshot.data is SuccessState) {
-                // Library bookCollection = (snapshot.data as SuccessState).value;
-                // return ListView.builder(
-                //   itemCount: bookCollection.books.length,
-                //   itemBuilder: (context, index) {
-                //     return bookListItem(index, bookCollection, context);
-                //   },
-                // );
+                Library bookCollection = (snapshot.data as SuccessState).value;
+                return ListView.builder(
+                  itemCount: bookCollection.books.length,
+                  itemBuilder: (context, index) {
+                    return bookListItem(index, bookCollection, context);
+                  },
+                );
               } else if (snapshot.data is ErrorState) {
                 String errorMessage = (snapshot.data as ErrorState).msg;
                 return Text(errorMessage);
@@ -82,5 +82,23 @@ class _FavoriteBooksScreenState extends State<FavoriteBooksScreen> {
             },
           ),
         ));
+  }
+
+  ListTile bookListItem(
+    int index, Library bookCollection, BuildContext context) {
+      return ListTile(
+        leading: Image.asset("images/book.png"),
+        title: Text(bookCollection.books[index].name),
+        subtitle: Text(
+          bookCollection.books[index].description,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.caption
+        ),
+        isThreeLine: true,
+        trailing: Text(
+          bookCollection.books[index].author,
+          style: Theme.of(context).textTheme.caption,
+        ),);
   }
 }

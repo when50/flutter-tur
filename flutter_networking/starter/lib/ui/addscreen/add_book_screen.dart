@@ -33,6 +33,9 @@
  */
 
 import 'package:flutter/material.dart';
+import '../../model/library.dart';
+import '../../model/result.dart';
+import '../../network/remote_data_source.dart';
 import '../common_widget/progress_dialog.dart';
 
 class AddBookScreen extends StatefulWidget {
@@ -44,15 +47,30 @@ class _AddBookScreenState extends State<AddBookScreen> {
   //variables to hold values that is provided in the TextFields
   String _name, _author, _description;
 
-  //1.TODO: Create the APiResponse class object
+  RemoteDataSource _apiResponse = RemoteDataSource();
 
   @override
   void initState() {
     super.initState();
-    //2. TODO: call the init() method of the ApiResponse class
+    _apiResponse.init();
+    hasBookAddedListener();
   }
 
-  //3. TODO: Create method to observe the stream from ApiResponse to update the UI
+  void hasBookAddedListener() {
+    _apiResponse.hasBookAdded().listen((Result result) {
+      if (result is LoadingState) {
+        showProgressDialog();
+      } else if (result is SuccessState) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      } else {
+        SnackBar(
+          content: Text("Unable to add book"),
+          duration: Duration(seconds: 2),
+        );
+      }
+    });
+  }
 
   //Method to show progressbar in a dialog
   showProgressDialog() => showDialog(context: context, builder: (BuildContext context) => ProgressDialog());
@@ -130,7 +148,9 @@ class _AddBookScreenState extends State<AddBookScreen> {
   RaisedButton submitButton() {
     return RaisedButton(
       onPressed: () {
-        //4. TODO: make a POST request to add book detail
+        final book = Book(
+          name: _name, author: _author, description: _description);
+        _apiResponse.addBook(book);
       },
       child: Text(
         "Submit",
