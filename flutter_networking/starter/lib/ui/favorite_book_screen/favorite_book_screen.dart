@@ -84,21 +84,34 @@ class _FavoriteBooksScreenState extends State<FavoriteBooksScreen> {
         ));
   }
 
-  ListTile bookListItem(
-    int index, Library bookCollection, BuildContext context) {
-      return ListTile(
+  Dismissible bookListItem(
+      int index, Library bookCollection, BuildContext context) {
+    return Dismissible(
+      child: ListTile(
         leading: Image.asset("images/book.png"),
         title: Text(bookCollection.books[index].name),
-        subtitle: Text(
-          bookCollection.books[index].description,
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.caption
-        ),
+        subtitle: Text(bookCollection.books[index].description,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.caption),
         isThreeLine: true,
         trailing: Text(
           bookCollection.books[index].author,
           style: Theme.of(context).textTheme.caption,
-        ),);
+        ),
+      ),
+      onDismissed: (direction) async {
+        Result result = await _apiResponse.deleteBook(index);
+        if (result is SuccessState) {
+          setState(() {
+            bookCollection.books.removeAt(index);
+          });
+        }
+      },
+      background: Container(
+        color: Colors.red,
+      ),
+      key: Key(bookCollection.books[index].name),
+    );
   }
 }

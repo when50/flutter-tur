@@ -77,9 +77,11 @@ class RemoteDataSource {
   void addBook(Book book) async {
     _addBookStream.sink.add(Result<String>.loading("Loading"));
     try {
-      final response = await client.request(requestType: RequestType.POST, path: "addBook", parameter: book);
+      final response = await client.request(
+          requestType: RequestType.POST, path: "addBook", parameter: book);
       if (response.statusCode == 200) {
-        _addBookStream.sink.add(Result<NetworkResponse>.success(NetworkResponse.fromRawJson(response.body)));
+        _addBookStream.sink.add(Result<NetworkResponse>.success(
+            NetworkResponse.fromRawJson(response.body)));
       } else {
         _addBookStream.sink.add(Result.error("Something went wrong"));
       }
@@ -88,7 +90,21 @@ class RemoteDataSource {
     }
   }
 
-  //8. TODO: add logic to method to delete book details from the server using DELETE request
+  Future<Result> deleteBook(int index) async {
+    try {
+      final response = await client.request(
+          requestType: RequestType.DELETE, path: "deleteBook/$index");
+      if (response.statusCode == 200) {
+        return Result<NetworkResponse>.success(
+            NetworkResponse.fromRawJson(response.body));
+      } else {
+        return Result<NetworkResponse>.error(
+            NetworkResponse.fromRawJson(response.body));
+      }
+    } catch (error) {
+      return Result.error("Something went wrong!");
+    }
+  }
 
   void dispose() {
     //7. TODO: close the stream that was opened to pass the result
